@@ -86,10 +86,7 @@ La pregunta debe:
 - Admitir múltiples perspectivas válidas
 - Tener entre 1 y 3 oraciones
 - No tener respuesta única ni correcta
-- Ser respondible en 150-250 palabras
 - Variar el tema cada semana (filosofía, ciencia, tecnología, ética, sociedad, creatividad, etc.)
-
-Respondé ÚNICAMENTE con la pregunta, sin introducción ni explicación.`;
 
   const text = await callClaude(metaPrompt);
   console.log(`   Prompt generado: "${text.slice(0, 80)}..."\n`);
