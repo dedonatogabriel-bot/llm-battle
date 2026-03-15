@@ -1,0 +1,11 @@
+{
+  "name": "llm-battle",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node battle.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
