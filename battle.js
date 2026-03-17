@@ -93,7 +93,7 @@ const DIM_LABELS = {
 async function generateWeeklyPrompt() {
   console.log('📝 Generando prompt semanal...');
   const today = new Date().toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  const metaPrompt = `Hoy es ${today}. Generá una sola pregunta abierta, intelectualmente estimulante, para comparar la capacidad de razonamiento de distintos modelos de lenguaje. 
+const metaPrompt = `Hoy es ${today}. Generá una sola pregunta abierta, intelectualmente estimulante, para comparar la capacidad de razonamiento de distintos modelos de lenguaje. 
 
 La pregunta debe:
 - Ser original y no genérica
@@ -101,6 +101,8 @@ La pregunta debe:
 - Tener entre 1 y 3 oraciones
 - No tener respuesta única ni correcta
 - Variar el tema cada semana (filosofía, ciencia, tecnología, ética, sociedad, creatividad, etc.)
+
+Respondé solo con la pregunta, sin explicaciones ni formato adicional.`;
 
   const text = await callClaude(metaPrompt);
   console.log(`   Prompt generado: "${text.slice(0, 80)}..."\n`);
