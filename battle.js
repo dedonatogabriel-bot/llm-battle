@@ -109,19 +109,6 @@ async function generateWeeklyPrompt() {
   console.log(`   Prompt: "${prompt.slice(0, 80)}..."\n`);
   return prompt;
 }
-La pregunta debe:
-- Ser original y no genérica
-- Admitir múltiples perspectivas válidas
-- Tener entre 1 y 3 oraciones
-- No tener respuesta única ni correcta
-- Variar el tema cada semana (filosofía, ciencia, tecnología, ética, sociedad, creatividad, etc.)
-
-Respondé solo con la pregunta, sin explicaciones ni formato adicional.`;
-
-  const text = await callOpenAI (metaPrompt);
-  console.log(`   Prompt generado: "${text.slice(0, 80)}..."\n`);
-  return text.trim();
-}
 
 // ═══════════════════════════════════════════════════════
 //  2. OBTENER RESPUESTAS
