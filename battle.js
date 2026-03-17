@@ -104,7 +104,7 @@ La pregunta debe:
 
 Respondé solo con la pregunta, sin explicaciones ni formato adicional.`;
 
-  const text = await callGroq(metaPrompt);
+  const text = await callGrok(metaPrompt);
   console.log(`   Prompt generado: "${text.slice(0, 80)}..."\n`);
   return text.trim();
 }
