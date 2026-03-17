@@ -91,10 +91,24 @@ const DIM_LABELS = {
 //  1. GENERAR PROMPT DE LA SEMANA (via Claude)
 // ═══════════════════════════════════════════════════════
 async function generateWeeklyPrompt() {
-  console.log('📝 Generando prompt semanal...');
-  const today = new Date().toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-const metaPrompt = `Hoy es ${today}. Generá una sola pregunta abierta, intelectualmente estimulante, para comparar la capacidad de razonamiento de distintos modelos de lenguaje. 
-
+  const PROMPTS = [
+    '¿En qué momento una mentira piadosa deja de ser un acto de cuidado y se convierte en una forma de control?',
+    '¿Puede existir progreso genuino sin pérdida, o toda mejora implica necesariamente que algo valioso desaparece?',
+    'Si la consciencia es solo el resultado de procesos físicos, ¿tiene sentido hablar de libre albedrío, o es una ilusión útil?',
+    '¿Qué dice más de una sociedad: cómo trata a sus criminales o cómo trata a sus genios?',
+    '¿Es posible ser completamente honesto con otra persona sin ser, en alguna medida, cruel?',
+    'Si pudieras eliminar el aburrimiento de la experiencia humana, ¿deberías hacerlo?',
+    '¿Cuál es la diferencia entre adaptarse y rendirse?',
+    '¿En qué se parece diseñar una ciudad a diseñar una mente?',
+    '¿Puede una inteligencia artificial tener intuición, o solo puede simularla?',
+    '¿Qué hace que una disculpa sea genuina, y por qué a veces preferimos no recibirlas?',
+  ];
+  const now = new Date();
+  const week = Math.ceil((((now - new Date(now.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
+  const prompt = PROMPTS[week % PROMPTS.length];
+  console.log(`   Prompt: "${prompt.slice(0, 80)}..."\n`);
+  return prompt;
+}
 La pregunta debe:
 - Ser original y no genérica
 - Admitir múltiples perspectivas válidas
