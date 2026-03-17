@@ -52,12 +52,26 @@ const MODELS = [
     enabled: !!process.env.DEEPSEEK_KEY,
     call: callDeepSeek,
   },
+{
+    id: 'mistral',
+    name: 'Mistral',
+    version: 'mistral-large-latest',
+    enabled: !!process.env.MISTRAL_KEY,
+    call: callMistral,
+  },
   {
-    id: 'copilot',
-    name: 'Copilot',
-    version: 'gpt-4o (Azure)',
-    enabled: !!(process.env.AZURE_KEY && process.env.AZURE_ENDPOINT),
-    call: callCopilot,
+    id: 'cohere',
+    name: 'Cohere',
+    version: 'command-r-plus',
+    enabled: !!process.env.COHERE_KEY,
+    call: callCohere,
+  },
+  {
+    id: 'groq',
+    name: 'Groq',
+    version: 'llama-3.3-70b-versatile',
+    enabled: !!process.env.GROQ_KEY,
+    call: callGroq,
   },
 ];
 
@@ -821,16 +835,36 @@ async function callDeepSeek(prompt) {
   return d.choices[0].message.content;
 }
 
-async function callCopilot(prompt) {
-  const endpoint = process.env.AZURE_ENDPOINT.replace(/\/$/, '');
-  const url = `${endpoint}/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-15-preview`;
-  const r = await fetch(url, {
+async function callMistral(prompt) {
+  const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'api-key': process.env.AZURE_KEY },
-    body: JSON.stringify({ max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.MISTRAL_KEY}` },
+    body: JSON.stringify({ model: 'mistral-large-latest', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
   });
   const d = await r.json();
-  if (!r.ok) throw new Error(d.error?.message || 'Error Azure/Copilot');
+  if (!r.ok) throw new Error(d.error?.message || 'Error Mistral');
+  return d.choices[0].message.content;
+}
+
+async function callCohere(prompt) {
+  const r = await fetch('https://api.cohere.com/v2/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.COHERE_KEY}` },
+    body: JSON.stringify({ model: 'command-r-plus', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.message || 'Error Cohere');
+  return d.message.content[0].text;
+}
+
+async function callGroq(prompt) {
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${process.env.GROQ_KEY}` },
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', max_tokens: 800, messages: [{ role: 'user', content: prompt }] })
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error?.message || 'Error Groq');
   return d.choices[0].message.content;
 }
 
