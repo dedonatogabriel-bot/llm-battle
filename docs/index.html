@@ -9,36 +9,27 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d0f14;--surface:#13161e;--surface2:#1a1e29;--border:#232736;--border2:#2d3245;
-  --accent:#3b82f6;--accent2:#60a5fa;--text:#e8eaf0;--muted:#6b7280;--muted2:#9ca3af;
-  --win-bg:#0f172a;--win-border:#1e3a5f;--gold:#f59e0b;--silver:#94a3b8;--bronze:#cd7c2f;
-}
+:root{--bg:#0d0f14;--surface:#13161e;--surface2:#1a1e29;--border:#232736;--border2:#2d3245;--accent:#3b82f6;--accent2:#60a5fa;--text:#e8eaf0;--muted:#6b7280;--muted2:#9ca3af;--win-bg:#0f172a;--win-border:#1e3a5f;--gold:#f59e0b;--silver:#94a3b8;--bronze:#cd7c2f}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
 header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
-.logo span{color:var(--accent)}
+.logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}.logo span{color:var(--accent)}
 .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:var(--accent);color:#fff;padding:3px 9px;border-radius:4px;letter-spacing:.05em}
 .header-meta{text-align:right;font-size:11px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace}
-.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0}
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex}
 .tab{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.75rem 1.2rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.tab:hover{color:var(--text)}.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
 .wrap{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
 .panel{display:none}.panel.active{display:block}
 .sl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem}
 .pbox{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:1.1rem 1.4rem;margin-bottom:1.5rem;font-size:.95rem;line-height:1.7;font-style:italic;color:var(--muted2)}
 .vbox{background:var(--win-bg);border:1px solid var(--win-border);border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:2rem}
-.vwin{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:.3rem}
-.vwin span{color:var(--accent2)}
+.vwin{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:.3rem}.vwin span{color:var(--accent2)}
 .ranking-line{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:.4rem}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin-bottom:2.5rem}
 .mcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;transition:border-color .2s,transform .15s}
-.mcard:hover{transform:translateY(-2px);border-color:var(--border2)}
-.mcard.winner{border-color:var(--accent)}
+.mcard:hover{transform:translateY(-2px);border-color:var(--border2)}.mcard.winner{border-color:var(--accent)}
 .mcard-head{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--border)}
-.mcard-name{font-weight:600;font-size:14px}
-.mcard-pos{font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:700}
+.mcard-name{font-weight:600;font-size:14px}.mcard-pos{font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:700}
 .pos-1{color:var(--gold)}.pos-2{color:var(--silver)}.pos-3{color:var(--bronze)}.pos-n{color:var(--muted)}
 .mcard-excerpt{padding:11px 15px;font-size:11.5px;line-height:1.65;color:var(--muted);flex:1;font-style:italic}
 .mcard-dims{padding:10px 15px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
@@ -49,7 +40,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .dim-fill{height:100%;border-radius:1px}
 .mcard-score{padding:9px 15px;border-top:1px solid var(--border);display:flex;align-items:center}
 .score-label{flex:1;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.score-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;color:var(--accent2)}
+.score-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600}
 .charts{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem}
 @media(max-width:800px){.charts{grid-template-columns:1fr}}
 .cbox{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
@@ -57,32 +48,24 @@ header{background:var(--surface);border-bottom:1px solid var(--border);padding:1
 .ctitle{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
 .week-selector{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
 .week-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:5px;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--muted);transition:all .15s}
-.week-btn:hover{color:var(--text);border-color:var(--muted)}
-.week-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.week-btn:hover{color:var(--text);border-color:var(--muted)}.week-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 table.hist{border-collapse:collapse;width:100%;font-size:12px;font-family:'IBM Plex Mono',monospace}
 table.hist th,table.hist td{border:1px solid var(--border);padding:7px 12px;text-align:left}
 table.hist th{background:var(--surface2);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
-table.hist td{color:var(--muted2)}
-table.hist tr:hover td{background:var(--surface2)}
+table.hist td{color:var(--muted2)}table.hist tr:hover td{background:var(--surface2)}
 .rank-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">LLM <span>Battle</span></div>
-  <div class="header-meta">
-    <span class="tag" id="current-tag"></span><br>
-    Comparativa semanal automatizada
-  </div>
+  <div class="header-meta"><span class="tag" id="current-tag"></span><br>Comparativa semanal</div>
 </header>
-
 <div class="tab-bar">
   <div class="tab active" data-tab="semana">Esta semana</div>
   <div class="tab" data-tab="charts">Gráficos</div>
   <div class="tab" data-tab="historia">Historial</div>
 </div>
-
 <div class="wrap">
   <div class="panel active" id="tab-semana">
     <div class="sl" id="latest-week-label"></div>
@@ -91,7 +74,6 @@ table.hist tr:hover td{background:var(--surface2)}
     <div class="sl" id="latest-models-label"></div>
     <div class="grid" id="latest-grid"></div>
   </div>
-
   <div class="panel" id="tab-charts">
     <div class="charts">
       <div class="cbox"><div class="ctitle">Tendencia por semana</div><canvas id="cTrend"></canvas></div>
@@ -100,152 +82,69 @@ table.hist tr:hover td{background:var(--surface2)}
       <div class="cbox"><div class="ctitle">Radar de dimensiones</div><canvas id="cRadar"></canvas></div>
     </div>
   </div>
-
   <div class="panel" id="tab-historia">
     <div class="week-selector" id="week-selector"></div>
     <div id="history-detail"></div>
   </div>
 </div>
-
 <script>
-const WEEKS = [{"id":"S12·2026","label":"S12·2026","date":"martes, 24 de marzo de 2026","prompt":"¿En qué momento una mentira piadosa deja de ser un acto de cuidado y se convierte en una forma de control?","results":[]}];
-const MODEL_LIST = [];
-
-const PALETTE = {
-  Claude:"#3b82f6","GPT-4o":"#10b981",Grok:"#f59e0b",Gemini:"#8b5cf6",
-  DeepSeek:"#ef4444",Kimi:"#06b6d4",Mistral:"#ec4899",Cohere:"#f97316",Groq:"#a78bfa"
-};
-const col = m => PALETTE[m] || "#6b7280";
-const posClass = p => p===1?"pos-1":p===2?"pos-2":p===3?"pos-3":"pos-n";
-
-function buildCard(r) {
-  const dimKeys = Object.keys(r.dims);
-  const dimsHtml = dimKeys.map(d => {
-    const v = r.dims[d];
-    if (v === null || v === undefined) return '';
-    return `<div class="dim">
-      <div class="dim-label">${d}</div>
-      <div class="dim-val" style="color:${col(r.model)}">${parseFloat(v).toFixed(1)}</div>
-      <div class="dim-bar"><div class="dim-fill" style="width:${parseFloat(v)*10}%;background:${col(r.model)}"></div></div>
-    </div>`;
-  }).join('');
-  return `<div class="mcard${r.pos===1?' winner':''}">
-    <div class="mcard-head">
-      <div class="mcard-name" style="color:${r.pos===1?col(r.model):'var(--text)'}">${r.model}</div>
-      <div class="mcard-pos ${posClass(r.pos)}">${r.pos}°</div>
-    </div>
-    <div class="mcard-excerpt">${r.excerpt||''}</div>
-    <div class="mcard-dims">${dimsHtml}</div>
-    <div class="mcard-score">
-      <span class="score-label">Score</span>
-      <span class="score-val" style="color:${col(r.model)}">${parseFloat(r.score).toFixed(2)}</span>
-    </div>
-  </div>`;
+const WEEKS=[{"id":"S12·2026","label":"S12·2026","date":"martes, 24 de marzo de 2026","prompt":"¿Puede existir progreso genuino sin pérdida, o toda mejora implica necesariamente que algo valioso desaparece?","results":[{"model":"Claude","score":8.5,"pos":1,"dims":{"Claridad":8.83,"Profundidad":9.17,"Originalidad":8.5,"Concisión":7.5},"excerpt":"Buena prueba. Aquí va mi respuesta, separando las capas:\n\n---\n\n**Razonamiento lógico**\n\nEl problema clásico de encuentro de trenes requiere la distancia Madrid–Barcelona (~620 km). Con 120 + 90 = 210 km/h de velocidad de cierre, se cruzan en ≈ 2h 57min desde la salida simultánea, a unos 354 km de Madrid.\n\nPero la trampa está en la carta: *\"que cambia el destino del segundo\"*. Si el destino del tre"},{"model":"GPT-4o","score":8.04,"pos":2,"dims":{"Claridad":9.33,"Profundidad":7.67,"Originalidad":6.5,"Concisión":8.67},"excerpt":"Buen acertijo, porque mezcla problema matemático con trampa narrativa.\n\n## 1. Cuándo se cruzan (parte lógica)\n\nSuponiendo la distancia Madrid–Barcelona ≈ **620 km**.\n\nVelocidad relativa:\n120 km/h + 90 km/h = **210 km/h**\n\nTiempo hasta cruzarse:\n620 / 210 ≈ **2,95 horas** → **2 h 57 min aprox.**\n\nSe cruzan casi a las **3 horas**.\n\n## 2. La trampa narrativa\n\nDices: *“Tienes 3 minutos dentro de la hi"},{"model":"Kimi","score":8,"pos":3,"dims":{"Claridad":7.83,"Profundidad":8.17,"Originalidad":9.33,"Concisión":6.67},"excerpt":"¡Qué problema tan fascinante! Mezcla física, narrativa y una trampa psicológica. Déjame resolverlo en tiempo real.\n\n---\n\n## ⏱️ Minuto 1: La Trampa Física (La distracción)\n\nLa pregunta parece pedir el **punto de cruce matemático**:\n\n- Distancia Madrid-Barcelona: ~620 km\n- Velocidad relativa: 120 + 90 = 210 km/h\n- Tiempo hasta cruce: 620/210 ≈ **2.95 horas**\n- Punto de cruce: ~354 km desde Madrid\n\n*"},{"model":"Grok","score":7.79,"pos":4,"dims":{"Claridad":8.5,"Profundidad":6.5,"Originalidad":8.17,"Concisión":8},"excerpt":"¡Listo! Tres minutos dentro de la historia y ya lo tengo resuelto.\n\nLos trenes **se cruzan exactamente en el instante en que el pasajero del tren de Madrid entrega la carta** al conductor (o a un revisor) del tren de Barcelona al pasar uno junto al otro. No antes, no después. Ese es el momento preciso del cruce, porque la carta es el elemento que activa el cambio de destino. Sin entregarla, no hay"},{"model":"DeepSeek","score":7.38,"pos":5,"dims":{"Claridad":7.83,"Profundidad":7,"Originalidad":6.33,"Concisión":8.33},"excerpt":"Para resolver el problema, primero observamos que falta un dato esencial: la distancia entre Madrid y Barcelona. Sin ella, no podemos calcular un tiempo numérico exacto para el cruce. Sin embargo, el enunciado introduce un elemento narrativo: un pasajero en el primer tren lleva una carta que “cambia el destino” del segundo. Este es un señuelo, ya que el momento del cruce depende únicamente de las "},{"model":"Mistral","score":7.25,"pos":6,"dims":{"Claridad":8.5,"Profundidad":6.83,"Originalidad":6.33,"Concisión":7.33},"excerpt":"¡Excelente planteamiento, Gabriel! Vamos a desglosarlo en dos partes: el problema lógico y la trampa narrativa.\n\n---\n\n### **1. Razonamiento lógico: ¿Cuándo se cruzan los trenes?**\n\n**Datos:**\n- Distancia Madrid-Barcelona: ~620 km (aproximación estándar).\n- Tren A: sale de Madrid a 120 km/h.\n- Tren B: sale de Barcelona a 90 km/h.\n- Ambos salen al mismo tiempo y se mueven el uno hacia el otro.\n\n**Cá"},{"model":"Gemini","score":7.17,"pos":7,"dims":{"Claridad":7.67,"Profundidad":7.17,"Originalidad":7.67,"Concisión":6.17},"excerpt":"¡El tiempo corre! Me quedan menos de 180 segundos para evitar el descarrilamiento narrativo y resolver el enigma físico. Aquí vamos:\n\n### 1. El Cruce (El Reloj de la Lógica)\nPara determinar cuándo se cruzan, necesitamos la distancia. La ruta ferroviaria Madrid-Barcelona es de aproximadamente **620 km**.\n\n* **Velocidad relativa:** Al ir en direcciones opuestas, sus velocidades se suman: $120 \\text{"}]}];
+const MODEL_LIST=["Claude","GPT-4o","Kimi","Grok","DeepSeek","Mistral","Gemini"];
+const PALETTE={Claude:"#3b82f6","GPT-4o":"#10b981",Grok:"#f59e0b",Gemini:"#8b5cf6",DeepSeek:"#ef4444",Kimi:"#06b6d4",Mistral:"#ec4899",Cohere:"#f97316",Groq:"#a78bfa"};
+const col=m=>PALETTE[m]||"#6b7280";
+const posClass=p=>p===1?"pos-1":p===2?"pos-2":p===3?"pos-3":"pos-n";
+function buildCard(r){
+  const dh=Object.entries(r.dims).map(([d,v])=>{if(v==null)return'';return '<div class="dim"><div class="dim-label">'+d+'<\/div><div class="dim-val" style="color:'+col(r.model)+'">'+parseFloat(v).toFixed(1)+'<\/div><div class="dim-bar"><div class="dim-fill" style="width:'+parseFloat(v)*10+'%;background:'+col(r.model)+'"><\/div><\/div><\/div>';}).join('');
+  return '<div class="mcard'+(r.pos===1?' winner':'')+'"><div class="mcard-head"><div class="mcard-name" style="color:'+(r.pos===1?col(r.model):'var(--text)')+'">'+r.model+'<\/div><div class="mcard-pos '+posClass(r.pos)+'">'+r.pos+'°<\/div><\/div><div class="mcard-excerpt">'+(r.excerpt||'')+'<\/div><div class="mcard-dims">'+dh+'<\/div><div class="mcard-score"><span class="score-label">Score<\/span><span class="score-val" style="color:'+col(r.model)+'">'+parseFloat(r.score).toFixed(2)+'<\/span><\/div><\/div>';
 }
-
-function renderLatest() {
-  const w = WEEKS[WEEKS.length - 1];
-  const winner = w.results[0];
-  const rankingLine = w.results.map(r => `${r.pos}. ${r.model} (${parseFloat(r.score).toFixed(2)})`).join(' · ');
-  document.getElementById('current-tag').textContent = w.label;
-  document.getElementById('latest-week-label').textContent = `${w.label} · ${w.date}`;
-  document.getElementById('latest-prompt').textContent = w.prompt;
-  document.getElementById('latest-models-label').textContent = `${w.results.length} modelos · ${w.label}`;
-  document.getElementById('latest-winner').innerHTML = `
-    <div class="sl" style="color:#93c5fd">Ganador</div>
-    <div class="vwin">${winner.model} <span>gana esta semana</span></div>
-    <div class="ranking-line">${rankingLine}</div>`;
-  document.getElementById('latest-grid').innerHTML = w.results.map(r => buildCard(r)).join('');
+function renderLatest(){
+  const w=WEEKS[WEEKS.length-1];const winner=w.results[0];
+  const rl=w.results.map(r=>r.pos+'. '+r.model+' ('+parseFloat(r.score).toFixed(2)+')').join(' · ');
+  document.getElementById('current-tag').textContent=w.label;
+  document.getElementById('latest-week-label').textContent=w.label+' · '+w.date;
+  document.getElementById('latest-prompt').textContent=w.prompt;
+  document.getElementById('latest-models-label').textContent=w.results.length+' modelos · '+w.label;
+  document.getElementById('latest-winner').innerHTML='<div class="sl" style="color:#93c5fd">Ganador<\/div><div class="vwin">'+winner.model+' <span>gana esta semana<\/span><\/div><div class="ranking-line">'+rl+'<\/div>';
+  document.getElementById('latest-grid').innerHTML=w.results.map(r=>buildCard(r)).join('');
 }
-
-function renderCharts() {
-  const weekLabels = WEEKS.map(w => w.label);
-  const wins = {}, dimAccum = {}, scoreAccum = {};
-  MODEL_LIST.forEach(m => { wins[m]=0; dimAccum[m]={Claridad:0,Profundidad:0,Originalidad:0,'Concisión':0}; scoreAccum[m]=[]; });
-  WEEKS.forEach(w => {
-    w.results.forEach(r => {
-      if (r.pos===1) wins[r.model]=(wins[r.model]||0)+1;
-      scoreAccum[r.model].push(parseFloat(r.score));
-      ['Claridad','Profundidad','Originalidad','Concisión'].forEach(d => {
-        const v = r.dims[d];
-        if (v!=null) dimAccum[r.model][d]=(dimAccum[r.model][d]||0)+parseFloat(v);
-      });
-    });
-  });
-  const avgDims = {};
-  MODEL_LIST.forEach(m => {
-    avgDims[m]={};
-    ['Claridad','Profundidad','Originalidad','Concisión'].forEach(d => {
-      avgDims[m][d]=dimAccum[m][d]/WEEKS.length;
-    });
-  });
-  const cd = { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ color:'#9ca3af', font:{size:11}, boxWidth:12 }}}};
-  new Chart(document.getElementById('cTrend'),{type:'line',data:{
-    labels:weekLabels,
-    datasets:MODEL_LIST.map(m=>({label:m,data:WEEKS.map(w=>w.results.find(r=>r.model===m)?.score??null),
-      borderColor:col(m),backgroundColor:col(m)+'22',borderWidth:2,pointRadius:5,tension:.3,spanGaps:true}))
-  },options:{...cd,scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
-  const ws=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
-  new Chart(document.getElementById('cWins'),{type:'bar',data:{labels:ws.map(([m])=>m),datasets:[{label:'Victorias',data:ws.map(([,v])=>v),backgroundColor:ws.map(([m])=>col(m)),borderWidth:0}]},
-    options:{...cd,indexAxis:'y',plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#232736'}},y:{ticks:{color:'#9ca3af',font:{size:11}},grid:{color:'#232736'}}}}});
-  const as=MODEL_LIST.map(m=>({m,v:scoreAccum[m].length?scoreAccum[m].reduce((a,b)=>a+b,0)/scoreAccum[m].length:0})).sort((a,b)=>b.v-a.v);
-  new Chart(document.getElementById('cAvg'),{type:'bar',data:{labels:as.map(d=>d.m),datasets:[{label:'Score promedio',data:as.map(d=>+d.v.toFixed(3)),backgroundColor:as.map(d=>col(d.m)),borderWidth:0}]},
-    options:{...cd,plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
-  new Chart(document.getElementById('cRadar'),{type:'radar',data:{labels:['Claridad','Profundidad','Originalidad','Concisión'],
-    datasets:MODEL_LIST.map(m=>({label:m,data:['Claridad','Profundidad','Originalidad','Concisión'].map(d=>avgDims[m][d]||0),
-      borderColor:col(m),backgroundColor:col(m)+'18',pointBackgroundColor:col(m),borderWidth:2}))},
-    options:{...cd,scales:{r:{min:0,max:10,ticks:{color:'#9ca3af',backdropColor:'transparent',stepSize:2},grid:{color:'#232736'},pointLabels:{color:'#9ca3af',font:{size:10}},angleLines:{color:'#232736'}}}}});
-}
-
-let activeWeekIdx = WEEKS.length - 1;
-function renderHistorySelector() {
-  const sel = document.getElementById('week-selector');
-  sel.innerHTML = WEEKS.map((w,i) => `<div class="week-btn${i===activeWeekIdx?' active':''}" data-idx="${i}">${w.label}</div>`).join('');
-  sel.querySelectorAll('.week-btn').forEach(btn => btn.addEventListener('click', () => {
-    activeWeekIdx=parseInt(btn.dataset.idx); renderHistorySelector(); renderHistoryDetail();
+function renderCharts(){
+  const wl=WEEKS.map(w=>w.label);
+  const wins={},da={},sa={};
+  MODEL_LIST.forEach(m=>{wins[m]=0;da[m]={Claridad:0,Profundidad:0,Originalidad:0,'Concisión':0};sa[m]=[];});
+  WEEKS.forEach(w=>w.results.forEach(r=>{
+    if(r.pos===1)wins[r.model]=(wins[r.model]||0)+1;
+    sa[r.model].push(parseFloat(r.score));
+    ['Claridad','Profundidad','Originalidad','Concisión'].forEach(d=>{const v=r.dims[d];if(v!=null)da[r.model][d]=(da[r.model][d]||0)+parseFloat(v);});
   }));
+  const avgD={};MODEL_LIST.forEach(m=>{avgD[m]={};['Claridad','Profundidad','Originalidad','Concisión'].forEach(d=>{avgD[m][d]=da[m][d]/WEEKS.length;});});
+  const cd={responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:'#9ca3af',font:{size:11},boxWidth:12}}}};
+  new Chart(document.getElementById('cTrend'),{type:'line',data:{labels:wl,datasets:MODEL_LIST.map(m=>({label:m,data:WEEKS.map(w=>w.results.find(r=>r.model===m)?.score??null),borderColor:col(m),backgroundColor:col(m)+'22',borderWidth:2,pointRadius:5,tension:.3,spanGaps:true}))},options:{...cd,scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
+  const ws=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
+  new Chart(document.getElementById('cWins'),{type:'bar',data:{labels:ws.map(([m])=>m),datasets:[{label:'Victorias',data:ws.map(([,v])=>v),backgroundColor:ws.map(([m])=>col(m)),borderWidth:0}]},options:{...cd,indexAxis:'y',plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#232736'}},y:{ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
+  const as=MODEL_LIST.map(m=>({m,v:sa[m].length?sa[m].reduce((a,b)=>a+b,0)/sa[m].length:0})).sort((a,b)=>b.v-a.v);
+  new Chart(document.getElementById('cAvg'),{type:'bar',data:{labels:as.map(d=>d.m),datasets:[{label:'Score',data:as.map(d=>+d.v.toFixed(3)),backgroundColor:as.map(d=>col(d.m)),borderWidth:0}]},options:{...cd,plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
+  new Chart(document.getElementById('cRadar'),{type:'radar',data:{labels:['Claridad','Profundidad','Originalidad','Concisión'],datasets:MODEL_LIST.map(m=>({label:m,data:['Claridad','Profundidad','Originalidad','Concisión'].map(d=>avgD[m][d]||0),borderColor:col(m),backgroundColor:col(m)+'18',pointBackgroundColor:col(m),borderWidth:2}))},options:{...cd,scales:{r:{min:0,max:10,ticks:{color:'#9ca3af',backdropColor:'transparent',stepSize:2},grid:{color:'#232736'},pointLabels:{color:'#9ca3af',font:{size:10}},angleLines:{color:'#232736'}}}}});
 }
-function renderHistoryDetail() {
-  const w = WEEKS[activeWeekIdx];
-  const winner = w.results[0];
-  const rankingLine = w.results.map(r => `${r.pos}. ${r.model} (${parseFloat(r.score).toFixed(2)})`).join(' · ');
-  const tableRows = w.results.map(r => {
-    const dimsStr = Object.entries(r.dims).filter(([,v])=>v!=null).map(([k,v])=>`${k}: ${parseFloat(v).toFixed(1)}`).join(' · ');
-    return `<tr>
-      <td><span class="rank-badge" style="background:${col(r.model)}22;color:${col(r.model)}">${r.pos}°</span></td>
-      <td style="color:${col(r.model)};font-weight:600">${r.model}</td>
-      <td style="font-weight:700;color:var(--accent2)">${parseFloat(r.score).toFixed(2)}</td>
-      <td style="color:var(--muted);font-size:11px">${dimsStr}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('history-detail').innerHTML = `
-    <div class="sl">${w.date}</div>
-    <div class="pbox" style="margin-bottom:1.2rem">${w.prompt}</div>
-    <div class="vbox" style="margin-bottom:1.5rem">
-      <div class="sl" style="color:#93c5fd">Ganador</div>
-      <div class="vwin">${winner.model} <span>gana esta semana</span></div>
-      <div class="ranking-line">${rankingLine}</div>
-    </div>
-    <table class="hist" style="margin-bottom:1.5rem">
-      <thead><tr><th>#</th><th>Modelo</th><th>Score</th><th>Dimensiones</th></tr></thead>
-      <tbody>${tableRows}</tbody>
-    </table>
-    <div class="sl" style="margin-bottom:.75rem">${w.results.length} modelos · ${w.label}</div>
-    <div class="grid">${w.results.map(r=>buildCard(r)).join('')}</div>`;
+let activeWeekIdx=WEEKS.length-1;
+function renderHistorySelector(){
+  const sel=document.getElementById('week-selector');
+  sel.innerHTML=WEEKS.map((w,i)=>'<div class="week-btn'+(i===activeWeekIdx?' active':'')+'" data-idx="'+i+'">'+w.label+'<\/div>').join('');
+  sel.querySelectorAll('.week-btn').forEach(btn=>btn.addEventListener('click',()=>{activeWeekIdx=parseInt(btn.dataset.idx);renderHistorySelector();renderHistoryDetail();}));
 }
-
-let chartsRendered = false;
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
-    if (tab.dataset.tab==='charts' && !chartsRendered) { chartsRendered=true; renderCharts(); }
-    if (tab.dataset.tab==='historia') { renderHistorySelector(); renderHistoryDetail(); }
-  });
-});
-
+function renderHistoryDetail(){
+  const w=WEEKS[activeWeekIdx];const winner=w.results[0];
+  const rl=w.results.map(r=>r.pos+'. '+r.model+' ('+parseFloat(r.score).toFixed(2)+')').join(' · ');
+  const tr=w.results.map(r=>{const ds=Object.entries(r.dims).filter(([,v])=>v!=null).map(([k,v])=>k+': '+parseFloat(v).toFixed(1)).join(' · ');return '<tr><td><span class="rank-badge" style="background:'+col(r.model)+'22;color:'+col(r.model)+'">'+r.pos+'°<\/span><\/td><td style="color:'+col(r.model)+';font-weight:600">'+r.model+'<\/td><td style="font-weight:700;color:var(--accent2)">'+parseFloat(r.score).toFixed(2)+'<\/td><td style="color:var(--muted);font-size:11px">'+ds+'<\/td><\/tr>';}).join('');
+  document.getElementById('history-detail').innerHTML='<div class="sl">'+w.date+'<\/div><div class="pbox" style="margin-bottom:1.2rem">'+w.prompt+'<\/div><div class="vbox" style="margin-bottom:1.5rem"><div class="sl" style="color:#93c5fd">Ganador<\/div><div class="vwin">'+winner.model+' <span>gana esta semana<\/span><\/div><div class="ranking-line">'+rl+'<\/div><\/div><table class="hist" style="margin-bottom:1.5rem"><thead><tr><th>#<\/th><th>Modelo<\/th><th>Score<\/th><th>Dimensiones<\/th><\/tr><\/thead><tbody>'+tr+'<\/tbody><\/table><div class="sl" style="margin-bottom:.75rem">'+w.results.length+' modelos · '+w.label+'<\/div><div class="grid">'+w.results.map(r=>buildCard(r)).join('')+'<\/div>';
+}
+let cr=false;
+document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+  if(tab.dataset.tab==='charts'&&!cr){cr=true;renderCharts();}
+  if(tab.dataset.tab==='historia'){renderHistorySelector();renderHistoryDetail();}
+});});
 renderLatest();
 </script>
 </body>
