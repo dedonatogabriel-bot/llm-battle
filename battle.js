@@ -8,87 +8,26 @@
 import fs from 'fs';
 
 // ── Configuración de modelos ──────────────────────────
-// Comentá o eliminá los modelos cuya key no tengas.
 const MODELS = [
-  {
-    id: 'claude',
-    name: 'Claude',
-    version: 'claude-opus-4-5',
-    enabled: !!process.env.ANTHROPIC_KEY,
-    call: callClaude,
-  },
-  {
-    id: 'gpt4o',
-    name: 'GPT-4o',
-    version: 'gpt-4o',
-    enabled: !!process.env.OPENAI_KEY,
-    call: callOpenAI,
-  },
-  {
-    id: 'gemini',
-    name: 'Gemini',
-    version: 'gemini-2.0-flash',
-    enabled: !!process.env.GEMINI_KEY,
-    call: callGemini,
-  },
-  {
-    id: 'grok',
-    name: 'Grok',
-    version: 'grok-2',
-    enabled: !!process.env.GROK_KEY,
-    call: callGrok,
-  },
-  {
-    id: 'kimi',
-    name: 'Kimi',
-    version: 'moonshot-v1-8k',
-    enabled: !!process.env.KIMI_KEY,
-    call: callKimi,
-  },
-  {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    version: 'deepseek-chat',
-    enabled: !!process.env.DEEPSEEK_KEY,
-    call: callDeepSeek,
-  },
-{
-    id: 'mistral',
-    name: 'Mistral',
-    version: 'mistral-large-latest',
-    enabled: !!process.env.MISTRAL_KEY,
-    call: callMistral,
-  },
-  {
-    id: 'cohere',
-    name: 'Cohere',
-    version: 'command-r-plus',
-    enabled: !!process.env.COHERE_KEY,
-    call: callCohere,
-  },
-  {
-    id: 'groq',
-    name: 'Groq',
-    version: 'llama-3.3-70b-versatile',
-    enabled: !!process.env.GROQ_KEY,
-    call: callGroq,
-  },
+  { id: 'claude',   name: 'Claude',   version: 'claude-opus-4-5',        enabled: !!process.env.ANTHROPIC_KEY, call: callClaude   },
+  { id: 'gpt4o',    name: 'GPT-4o',   version: 'gpt-4o',                 enabled: !!process.env.OPENAI_KEY,    call: callOpenAI   },
+  { id: 'gemini',   name: 'Gemini',   version: 'gemini-2.0-flash',       enabled: !!process.env.GEMINI_KEY,    call: callGemini   },
+  { id: 'grok',     name: 'Grok',     version: 'grok-2',                 enabled: !!process.env.GROK_KEY,      call: callGrok     },
+  { id: 'kimi',     name: 'Kimi',     version: 'moonshot-v1-8k',         enabled: !!process.env.KIMI_KEY,      call: callKimi     },
+  { id: 'deepseek', name: 'DeepSeek', version: 'deepseek-chat',          enabled: !!process.env.DEEPSEEK_KEY,  call: callDeepSeek },
+  { id: 'mistral',  name: 'Mistral',  version: 'mistral-large-latest',   enabled: !!process.env.MISTRAL_KEY,   call: callMistral  },
+  { id: 'cohere',   name: 'Cohere',   version: 'command-r-plus',         enabled: !!process.env.COHERE_KEY,    call: callCohere   },
+  { id: 'groq',     name: 'Groq',     version: 'llama-3.3-70b-versatile',enabled: !!process.env.GROQ_KEY,      call: callGroq     },
 ];
 
 const ACTIVE = MODELS.filter(m => m.enabled);
 console.log(`\n⚡ Modelos activos: ${ACTIVE.map(m => m.name).join(', ')}\n`);
 
-// ── Dimensiones de evaluación ─────────────────────────
 const DIMS = ['claridad', 'profundidad', 'originalidad', 'concision'];
-const DIM_LABELS = {
-  claridad:     'Claridad',
-  profundidad:  'Profundidad',
-  originalidad: 'Originalidad',
-  concision:    'Concisión',
-};
+const DIM_LABELS = { claridad: 'Claridad', profundidad: 'Profundidad', originalidad: 'Originalidad', concision: 'Concisión' };
 
 // ═══════════════════════════════════════════════════════
-//  1. GENERAR PROMPT DE LA SEMANA (via Claude)
+//  1. PROMPT SEMANAL (rotatorio, sin API)
 // ═══════════════════════════════════════════════════════
 async function generateWeeklyPrompt() {
   const PROMPTS = [
@@ -102,6 +41,8 @@ async function generateWeeklyPrompt() {
     '¿En qué se parece diseñar una ciudad a diseñar una mente?',
     '¿Puede una inteligencia artificial tener intuición, o solo puede simularla?',
     '¿Qué hace que una disculpa sea genuina, y por qué a veces preferimos no recibirlas?',
+    '¿Tiene sentido hablar de identidad personal si cada célula de tu cuerpo se reemplaza con el tiempo?',
+    '¿Qué es más valioso: una vida larga y ordinaria, o una vida corta e intensa?',
   ];
   const now = new Date();
   const week = Math.ceil((((now - new Date(now.getFullYear(), 0, 1)) / 86400000) + 1) / 7);
@@ -111,7 +52,7 @@ async function generateWeeklyPrompt() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  2. OBTENER RESPUESTAS
+//  2. RESPUESTAS
 // ═══════════════════════════════════════════════════════
 async function getAllResponses(prompt) {
   console.log('🤖 Consultando modelos en paralelo...');
@@ -131,7 +72,7 @@ async function getAllResponses(prompt) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  3. SCORING CRUZADO — cada modelo evalúa a todos los demás
+//  3. SCORING CRUZADO
 // ═══════════════════════════════════════════════════════
 async function crossScore(prompt, responses) {
   console.log('\n📊 Scoring cruzado...');
@@ -140,16 +81,11 @@ async function crossScore(prompt, responses) {
     console.log('   Menos de 2 respuestas exitosas, no hay scoring cruzado.');
     return {};
   }
-
-  // Tabla: scores[evaluatorId][evaluatedId] = { claridad, profundidad, originalidad, concision }
   const scores = {};
-
   const evalJobs = successful.map(async evaluator => {
     const others = successful.filter(r => r.id !== evaluator.id);
     if (others.length === 0) return;
-
     const responsesBlock = others.map(r => `[${r.name}]:\n${r.text}`).join('\n\n---\n\n');
-
     const evalPrompt = `Se le hizo esta pregunta a varios modelos de IA:
 
 PREGUNTA: "${prompt}"
@@ -171,7 +107,6 @@ Respondé ÚNICAMENTE con JSON válido, sin texto extra ni markdown:
 }
 
 Nombres exactos a usar: ${others.map(r => r.name).join(', ')}`;
-
     try {
       const raw = await evaluator.call(evalPrompt);
       const clean = raw.replace(/```json|```/g, '').trim();
@@ -183,68 +118,40 @@ Nombres exactos a usar: ${others.map(r => r.name).join(', ')}`;
       scores[evaluator.id] = {};
     }
   });
-
   await Promise.all(evalJobs);
   return scores;
 }
 
 // ═══════════════════════════════════════════════════════
-//  4. CALCULAR RANKING FINAL
+//  4. RANKING
 // ═══════════════════════════════════════════════════════
 function computeRanking(responses, scores) {
   const successful = responses.filter(r => r.text);
   const totals = {};
-
   successful.forEach(model => {
-    let sumTotal = 0;
-    let count = 0;
+    let sumTotal = 0, count = 0;
     const dimSums = { claridad: 0, profundidad: 0, originalidad: 0, concision: 0 };
     const dimCounts = { claridad: 0, profundidad: 0, originalidad: 0, concision: 0 };
-
-    // Recopilar todos los scores que otros modelos le dieron a este
     Object.entries(scores).forEach(([evaluatorId, evals]) => {
-      if (evaluatorId === model.id) return; // no cuenta la auto-evaluación
+      if (evaluatorId === model.id) return;
       const sc = evals[model.name];
       if (!sc) return;
       DIMS.forEach(d => {
         if (typeof sc[d] === 'number') {
-          dimSums[d] += sc[d];
-          dimCounts[d]++;
-          sumTotal += sc[d];
-          count++;
+          dimSums[d] += sc[d]; dimCounts[d]++; sumTotal += sc[d]; count++;
         }
       });
     });
-
     const dimAvgs = {};
-    DIMS.forEach(d => {
-      dimAvgs[d] = dimCounts[d] > 0 ? +(dimSums[d] / dimCounts[d]).toFixed(2) : null;
-    });
-
+    DIMS.forEach(d => { dimAvgs[d] = dimCounts[d] > 0 ? +(dimSums[d] / dimCounts[d]).toFixed(2) : null; });
     totals[model.id] = {
-      name: model.name,
-      version: model.version,
-      text: model.text,
-      error: model.error,
-      dimAvgs,
-      finalScore: count > 0 ? +(sumTotal / count).toFixed(2) : null,
-      voteCount: count,
+      name: model.name, version: model.version, text: model.text, error: model.error,
+      dimAvgs, finalScore: count > 0 ? +(sumTotal / count).toFixed(2) : null, voteCount: count,
     };
   });
-
-  // Modelos sin respuesta también aparecen
   responses.filter(r => !r.text).forEach(r => {
-    totals[r.id] = {
-      name: r.name,
-      version: r.version,
-      text: null,
-      error: r.error,
-      dimAvgs: {},
-      finalScore: null,
-      voteCount: 0,
-    };
+    totals[r.id] = { name: r.name, version: r.version, text: null, error: r.error, dimAvgs: {}, finalScore: null, voteCount: 0 };
   });
-
   return Object.values(totals).sort((a, b) => {
     if (a.finalScore === null) return 1;
     if (b.finalScore === null) return -1;
@@ -253,10 +160,8 @@ function computeRanking(responses, scores) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  5. GOOGLE SHEETS — escribir resultados
+//  5. GOOGLE SHEETS
 // ═══════════════════════════════════════════════════════
-
-// Obtiene un access token usando JWT del Service Account
 async function getGoogleAccessToken() {
   const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   const now = Math.floor(Date.now() / 1000);
@@ -265,20 +170,15 @@ async function getGoogleAccessToken() {
     iss: creds.client_email,
     scope: 'https://www.googleapis.com/auth/spreadsheets',
     aud: 'https://oauth2.googleapis.com/token',
-    exp: now + 3600,
-    iat: now,
+    exp: now + 3600, iat: now,
   };
-
   const b64 = v => Buffer.from(JSON.stringify(v)).toString('base64url');
   const signingInput = `${b64(header)}.${b64(payload)}`;
-
-  // Firma con RS256 usando crypto nativo de Node 20
   const { createSign } = await import('crypto');
   const sign = createSign('RSA-SHA256');
   sign.update(signingInput);
   const signature = sign.sign(creds.private_key, 'base64url');
   const jwt = `${signingInput}.${signature}`;
-
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -295,45 +195,38 @@ async function writeToSheets(ranking, prompt, weekLabel, allScores) {
     console.log('   ⚠ Google Sheets no configurado, saltando.');
     return;
   }
-
   console.log('\n📊 Escribiendo en Google Sheets...');
   const token = await getGoogleAccessToken();
   const now = new Date().toISOString().slice(0, 10);
   const weekNum = weekLabel.replace('SEMANA ', '').trim();
 
-  // ── Hoja 1: "Resultados" — una fila por modelo por semana ──
+  // Resultados — columnas: semana, fecha, prompt, modelo, pos, score, claridad, profundidad, originalidad, concision, votos, excerpt
   const resultRows = ranking
     .filter(r => r.finalScore !== null)
-    .map(r => [
-      weekNum,
-      now,
-      prompt.slice(0, 200),
-      r.name,
+    .map((r, i) => [
+      weekNum, now, prompt.slice(0, 200), r.name, i + 1,
       r.finalScore?.toFixed(3) ?? '',
       r.dimAvgs.claridad?.toFixed(3) ?? '',
       r.dimAvgs.profundidad?.toFixed(3) ?? '',
       r.dimAvgs.originalidad?.toFixed(3) ?? '',
       r.dimAvgs.concision?.toFixed(3) ?? '',
       r.voteCount,
+      (r.text || '').slice(0, 400),
     ]);
-
   await sheetsAppend(token, sheetId, 'Resultados', resultRows);
 
-  // ── Hoja 2: "ScoresCruzados" — una fila por par evaluador/evaluado ──
   const crossRows = [];
   Object.entries(allScores).forEach(([evaluatorId, evals]) => {
     const evaluatorModel = ACTIVE.find(m => m.id === evaluatorId);
     if (!evaluatorModel) return;
     Object.entries(evals).forEach(([targetName, sc]) => {
       crossRows.push([
-        weekNum, now,
-        evaluatorModel.name, targetName,
+        weekNum, now, evaluatorModel.name, targetName,
         sc.claridad ?? '', sc.profundidad ?? '', sc.originalidad ?? '', sc.concision ?? '',
         ((DIMS.reduce((s, d) => s + (sc[d] || 0), 0)) / DIMS.length).toFixed(3),
       ]);
     });
   });
-
   if (crossRows.length > 0) await sheetsAppend(token, sheetId, 'ScoresCruzados', crossRows);
   console.log('   ✓ Sheets actualizado');
 }
@@ -351,29 +244,30 @@ async function sheetsAppend(token, sheetId, sheetName, rows) {
   }
 }
 
-// Lee todo el historial desde Sheets para las gráficas
+// Lee historial completo desde Sheets
+// Columnas: semana(0), fecha(1), prompt(2), modelo(3), pos(4), score(5),
+//           claridad(6), profundidad(7), originalidad(8), concision(9), votos(10), excerpt(11)
 async function readHistoryFromSheets() {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   if (!sheetId || !process.env.GOOGLE_SERVICE_ACCOUNT_JSON) return [];
-
   try {
     const token = await getGoogleAccessToken();
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent('Resultados')}!A2:J`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent('Resultados')}!A2:L`;
     const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
     const d = await res.json();
-    const rows = d.values || [];
-    // Columnas: semana, fecha, prompt, modelo, score, claridad, profundidad, originalidad, concision, votos
-    return rows.map(r => ({
+    return (d.values || []).map(r => ({
       week:         r[0] || '',
       date:         r[1] || '',
       prompt:       r[2] || '',
       model:        r[3] || '',
-      score:        parseFloat(r[4]) || null,
-      claridad:     parseFloat(r[5]) || null,
-      profundidad:  parseFloat(r[6]) || null,
-      originalidad: parseFloat(r[7]) || null,
-      concision:    parseFloat(r[8]) || null,
-      votes:        parseInt(r[9]) || 0,
+      pos:          parseInt(r[4]) || 0,
+      score:        parseFloat(r[5]) || null,
+      claridad:     parseFloat(r[6]) || null,
+      profundidad:  parseFloat(r[7]) || null,
+      originalidad: parseFloat(r[8]) || null,
+      concision:    parseFloat(r[9]) || null,
+      votes:        parseInt(r[10]) || 0,
+      excerpt:      r[11] || '',
     }));
   } catch(e) {
     console.log('   ⚠ No se pudo leer historial de Sheets:', e.message);
@@ -382,389 +276,314 @@ async function readHistoryFromSheets() {
 }
 
 // ═══════════════════════════════════════════════════════
-//  6. GENERAR HTML CON GRÁFICAS HISTÓRICAS
+//  6. BUILD HTML
 // ═══════════════════════════════════════════════════════
 function buildHTML(prompt, ranking, weekLabel, allScores, history) {
   const now = new Date();
-  const dateStr = now.toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  const winner = ranking.find(r => r.finalScore !== null);
-  const rankColors = ['#ffd700', '#b0b8c8', '#cd8040'];
+  const dateStr = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  // ── Cards semana actual ──
-  const cardsHTML = ranking.map((m, i) => {
-    const rankColor = i < 3 ? rankColors[i] : '#2a2a2a';
-    const dimsHTML = DIMS.map(d => {
-      const val = m.dimAvgs[d];
-      const pct = val !== null ? (val / 10) * 100 : 0;
-      return `<div class="dim">
-        <div class="dim-label">${DIM_LABELS[d]}</div>
-        <div class="dim-val">${val !== null ? val.toFixed(1) : '—'}</div>
-        <div class="dim-bar"><div class="dim-fill" style="width:${pct}%"></div></div>
-      </div>`;
-    }).join('');
-    const textPreview = m.text
-      ? m.text.slice(0, 320) + (m.text.length > 320 ? '…' : '')
-      : `<span class="err">✗ ${m.error || 'Sin respuesta'}</span>`;
-    return `
-    <div class="card${i === 0 && m.finalScore !== null ? ' winner' : ''}" style="--rank-color:${rankColor}">
-      <div class="card-head">
-        <div><div class="card-name">${m.name}</div><div class="card-ver">${m.version}</div></div>
-        <div class="card-rank" style="color:${rankColor};border-color:${rankColor}">${i + 1}°</div>
-      </div>
-      <div class="card-response">${textPreview}</div>
-      <div class="card-dims">${dimsHTML}</div>
-      <div class="card-score">
-        <span class="score-lbl">Score promedio</span>
-        <span class="score-val" style="color:${m.finalScore !== null ? '#c8ff00' : '#444'}">${m.finalScore !== null ? m.finalScore.toFixed(2) : '—'}</span>
-        ${m.voteCount > 0 ? `<span class="score-votes">${m.voteCount} eval.</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
+  // Construir array WEEKS para el HTML a partir del historial de Sheets
+  // + la batalla actual (que aún no está en Sheets al momento de generar el HTML)
+  const weekMap = {};
 
-  // ── Matriz cruzada ──
-  const successfulModels = ranking.filter(r => r.finalScore !== null);
-  const successfulNames  = successfulModels.map(r => r.name);
-  const matrixHeaderCells = successfulNames.map(n => `<th title="${n}">${n.slice(0,7)}</th>`).join('');
-  const matrixRows = successfulModels.map(evaluator => {
-    const evData = Object.entries(allScores).find(([id]) => ACTIVE.find(m => m.id === id && m.name === evaluator.name));
-    const evals = evData?.[1] || {};
-    const cells = successfulNames.map(target => {
-      if (target === evaluator.name) return '<td class="self">—</td>';
-      const sc = evals[target];
-      if (!sc) return '<td class="no-data">·</td>';
-      return `<td>${(DIMS.reduce((s,d)=>s+(sc[d]||0),0)/DIMS.length).toFixed(1)}</td>`;
-    }).join('');
-    return `<tr><td class="row-head">${evaluator.name.slice(0,7)}</td>${cells}</tr>`;
-  }).join('');
-
-  // ── Datos para gráficas (desde historial Sheets) ──
-  // Agrupar por modelo
-  const modelNames = [...new Set(history.map(r => r.model))].sort();
-  const weeks = [...new Set(history.map(r => r.week))].sort();
-
-  // Serie de scores globales por semana y modelo
-  const chartData = {};
-  modelNames.forEach(m => { chartData[m] = {}; });
-  history.forEach(r => { if (chartData[r.model]) chartData[r.model][r.week] = r.score; });
-
-  // Victorias acumuladas
-  const winsPerModel = {};
-  modelNames.forEach(m => { winsPerModel[m] = 0; });
-  weeks.forEach(w => {
-    const weekRows = history.filter(r => r.week === w && r.score !== null);
-    if (!weekRows.length) return;
-    const topScore = Math.max(...weekRows.map(r => r.score));
-    const topModel = weekRows.find(r => r.score === topScore)?.model;
-    if (topModel) winsPerModel[topModel] = (winsPerModel[topModel] || 0) + 1;
+  history.forEach(r => {
+    if (!weekMap[r.week]) {
+      weekMap[r.week] = { id: r.week, label: r.week, date: r.date, prompt: r.prompt, results: [] };
+    }
+    weekMap[r.week].results.push({
+      model: r.model,
+      score: r.score,
+      pos: r.pos,
+      dims: {
+        Claridad:     r.claridad,
+        Profundidad:  r.profundidad,
+        Originalidad: r.originalidad,
+        'Concisión':  r.concision,
+      },
+      excerpt: r.excerpt,
+    });
   });
 
-  // Promedios históricos por dimensión y modelo
-  const dimAvgsHistory = {};
-  modelNames.forEach(m => {
-    const rows = history.filter(r => r.model === m);
-    if (!rows.length) { dimAvgsHistory[m] = {}; return; }
-    const avg = d => (rows.filter(r=>r[d]!==null).reduce((s,r)=>s+r[d],0) / rows.filter(r=>r[d]!==null).length);
-    dimAvgsHistory[m] = {
-      claridad:     avg('claridad'),
-      profundidad:  avg('profundidad'),
-      originalidad: avg('originalidad'),
-      concision:    avg('concision'),
-    };
-  });
+  // Añadir semana actual
+  const currentWeekId = weekLabel.replace('SEMANA ', 'S').replace(' · ', '·');
+  weekMap[currentWeekId] = {
+    id: currentWeekId,
+    label: currentWeekId,
+    date: dateStr,
+    prompt: prompt,
+    results: ranking
+      .filter(r => r.finalScore !== null)
+      .map((r, i) => ({
+        model: r.name,
+        score: r.finalScore,
+        pos: i + 1,
+        dims: {
+          Claridad:     r.dimAvgs.claridad,
+          Profundidad:  r.dimAvgs.profundidad,
+          Originalidad: r.dimAvgs.originalidad,
+          'Concisión':  r.dimAvgs.concision,
+        },
+        excerpt: (r.text || '').slice(0, 400),
+      })),
+  };
 
-  // Historial de batallas para la tabla
-  const histWeeks = [...new Set(history.map(r => r.week))].sort().reverse().slice(0, 20);
-  const histTableRows = histWeeks.map(w => {
-    const weekRows = history.filter(r => r.week === w).sort((a,b) => (b.score??0)-(a.score??0));
-    const weekWinner = weekRows[0];
-    const weekPrompt = weekRows[0]?.prompt?.slice(0, 100) || '—';
-    const rankStr = weekRows.map((r,i) => `${i+1}. ${r.model} (${r.score?.toFixed(2)??'—'})`).join('  ·  ');
-    return `<tr>
-      <td class="hw">${w}</td>
-      <td class="hp">${weekPrompt}…</td>
-      <td class="hwin">${weekWinner?.model || '—'}</td>
-      <td class="hrank">${rankStr}</td>
-    </tr>`;
-  }).join('');
+  // Ordenar semanas cronológicamente
+  const weeksArray = Object.values(weekMap).sort((a, b) => a.id.localeCompare(b.id));
+  const weeksJSON = JSON.stringify(weeksArray);
 
-  // JSON para los charts (embebido en el HTML)
-  const chartJSON = JSON.stringify({ modelNames, weeks, chartData, winsPerModel, dimAvgsHistory });
+  const modelList = [...new Set(weeksArray.flatMap(w => w.results.map(r => r.model)))];
+  const modelsJSON = JSON.stringify(modelList);
 
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LLM Battle — ${weekLabel}</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LLM Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#080808;--sur:#0f0f0f;--brd:#1c1c1c;--acc:#c8ff00;--txt:#e0dbd0;--mut:#444;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--txt);font-family:'IBM Plex Mono',monospace;min-height:100vh;}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999;}
-header{border-bottom:1px solid var(--brd);padding:1.5rem 2.5rem;display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;background:var(--bg);}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:.04em;line-height:1;}
-.logo em{color:var(--acc);font-style:normal;}
-.meta{text-align:right;font-size:.65rem;color:var(--mut);line-height:1.9;}
-.wtag{display:inline-block;background:var(--acc);color:#000;font-family:'Bebas Neue',sans-serif;font-size:.85rem;padding:.1rem .6rem;letter-spacing:.1em;}
-.wrap{max-width:1500px;margin:0 auto;padding:2rem 2.5rem 5rem;}
-.lbl{font-size:.6rem;letter-spacing:.2em;color:var(--mut);text-transform:uppercase;margin-bottom:.8rem;margin-top:0;}
-.prompt-box{border:1px solid var(--brd);background:var(--sur);padding:1.2rem 1.5rem;margin-bottom:2.5rem;font-family:'Fraunces',serif;font-size:1rem;font-style:italic;line-height:1.7;color:#bbb;}
-.verdict{border:1px solid var(--acc);padding:1.8rem 2.2rem;margin-bottom:3rem;}
-.vey{font-size:.6rem;letter-spacing:.25em;color:var(--acc);text-transform:uppercase;margin-bottom:.5rem;}
-.vwin{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);line-height:1;margin-bottom:.3rem;}
-.vwin em{color:var(--acc);font-style:normal;}
-.vscore{font-size:.68rem;color:var(--mut);}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;margin-bottom:3rem;}
-.card{border:1px solid var(--brd);background:var(--sur);display:flex;flex-direction:column;}
-.card.winner{border-color:var(--rank-color,var(--brd));}
-.card-head{padding:.9rem 1.1rem .7rem;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
-.card-name{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.04em;}
-.card-ver{font-size:.56rem;color:var(--mut);letter-spacing:.1em;}
-.card-rank{font-family:'Bebas Neue',sans-serif;font-size:1rem;width:1.8rem;height:1.8rem;display:flex;align-items:center;justify-content:center;border:1px solid;flex-shrink:0;}
-.card-response{padding:.9rem 1.1rem;font-family:'Fraunces',serif;font-size:.77rem;line-height:1.75;color:#888;flex:1;max-height:160px;overflow-y:auto;font-style:italic;}
-.card-response::-webkit-scrollbar{width:2px;}
-.err{color:#ff4444;font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:.7rem;}
-.card-dims{padding:.7rem 1.1rem;border-top:1px solid var(--brd);display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;}
-.dim{display:flex;flex-direction:column;align-items:center;gap:.2rem;}
-.dim-label{font-size:.5rem;letter-spacing:.08em;color:var(--mut);text-transform:uppercase;text-align:center;}
-.dim-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;line-height:1;}
-.dim-bar{width:100%;height:2px;background:var(--brd);position:relative;}
-.dim-fill{position:absolute;left:0;top:0;bottom:0;background:var(--acc);}
-.card-score{padding:.55rem 1.1rem;border-top:1px solid var(--brd);display:flex;align-items:center;gap:.8rem;background:rgba(200,255,0,.03);}
-.score-lbl{font-size:.58rem;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;flex:1;}
-.score-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;}
-.score-votes{font-size:.58rem;color:var(--mut);}
-.section{margin-bottom:3rem;}
-.matrix-wrap{overflow-x:auto;}
-table.matrix{border-collapse:collapse;font-size:.68rem;width:100%;}
-table.matrix th,table.matrix td{border:1px solid var(--brd);padding:.4rem .6rem;text-align:center;white-space:nowrap;}
-table.matrix th{background:var(--sur);color:var(--mut);font-weight:600;letter-spacing:.05em;}
-td.self{color:var(--mut);}td.no-data{color:var(--brd);}
-.row-head{background:var(--sur);color:var(--mut);font-weight:600;text-align:left !important;}
-/* CHARTS */
-.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:3rem;}
-@media(max-width:900px){.charts-grid{grid-template-columns:1fr;}}
-.chart-box{border:1px solid var(--brd);background:var(--sur);padding:1.2rem;}
-.chart-box canvas{max-height:260px;}
-.chart-title{font-size:.6rem;letter-spacing:.15em;color:var(--mut);text-transform:uppercase;margin-bottom:1rem;}
-/* HISTORY TABLE */
-table.hist{border-collapse:collapse;font-size:.65rem;width:100%;}
-table.hist th,table.hist td{border:1px solid var(--brd);padding:.4rem .8rem;text-align:left;vertical-align:top;}
-table.hist th{background:var(--sur);color:var(--mut);font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
-.hw{color:var(--mut);white-space:nowrap;min-width:100px;}
-.hp{font-family:'Fraunces',serif;font-style:italic;color:#888;max-width:300px;}
-.hwin{color:var(--acc);font-family:'Bebas Neue',sans-serif;font-size:.95rem;white-space:nowrap;}
-.hrank{color:#555;font-size:.6rem;}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--brd);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f14;--surface:#13161e;--surface2:#1a1e29;--border:#232736;--border2:#2d3245;
+  --accent:#3b82f6;--accent2:#60a5fa;--text:#e8eaf0;--muted:#6b7280;--muted2:#9ca3af;
+  --win-bg:#0f172a;--win-border:#1e3a5f;--gold:#f59e0b;--silver:#94a3b8;--bronze:#cd7c2f;
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;background:var(--accent);color:#fff;padding:3px 9px;border-radius:4px;letter-spacing:.05em}
+.header-meta{text-align:right;font-size:11px;color:var(--muted);line-height:1.6;font-family:'IBM Plex Mono',monospace}
+.tab-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0}
+.tab{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.75rem 1.2rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;user-select:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.wrap{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+.panel{display:none}.panel.active{display:block}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.5rem}
+.pbox{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:1.1rem 1.4rem;margin-bottom:1.5rem;font-size:.95rem;line-height:1.7;font-style:italic;color:var(--muted2)}
+.vbox{background:var(--win-bg);border:1px solid var(--win-border);border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:2rem}
+.vwin{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);margin-bottom:.3rem}
+.vwin span{color:var(--accent2)}
+.ranking-line{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);margin-top:.4rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin-bottom:2.5rem}
+.mcard{background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;transition:border-color .2s,transform .15s}
+.mcard:hover{transform:translateY(-2px);border-color:var(--border2)}
+.mcard.winner{border-color:var(--accent)}
+.mcard-head{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--border)}
+.mcard-name{font-weight:600;font-size:14px}
+.mcard-pos{font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:700}
+.pos-1{color:var(--gold)}.pos-2{color:var(--silver)}.pos-3{color:var(--bronze)}.pos-n{color:var(--muted)}
+.mcard-excerpt{padding:11px 15px;font-size:11.5px;line-height:1.65;color:var(--muted);flex:1;font-style:italic}
+.mcard-dims{padding:10px 15px;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.dim{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dim-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dim-val{font-family:'IBM Plex Mono',monospace;font-size:.85rem;font-weight:600}
+.dim-bar{width:100%;height:2px;background:var(--border2);border-radius:1px}
+.dim-fill{height:100%;border-radius:1px}
+.mcard-score{padding:9px 15px;border-top:1px solid var(--border);display:flex;align-items:center}
+.score-label{flex:1;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.score-val{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:600;color:var(--accent2)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem}
+@media(max-width:800px){.charts{grid-template-columns:1fr}}
+.cbox{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.2rem}
+.cbox canvas{max-height:240px}
+.ctitle{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem}
+.week-selector{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.week-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:5px 12px;border-radius:5px;cursor:pointer;border:1px solid var(--border2);background:var(--surface);color:var(--muted);transition:all .15s}
+.week-btn:hover{color:var(--text);border-color:var(--muted)}
+.week-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+table.hist{border-collapse:collapse;width:100%;font-size:12px;font-family:'IBM Plex Mono',monospace}
+table.hist th,table.hist td{border:1px solid var(--border);padding:7px 12px;text-align:left}
+table.hist th{background:var(--surface2);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+table.hist td{color:var(--muted2)}
+table.hist tr:hover td{background:var(--surface2)}
+.rank-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">LLM <em>BATTLE</em></div>
-  <div class="meta">
-    <span class="wtag">${weekLabel}</span><br>
-    Comparativa semanal · scoring cruzado<br>
-    ${dateStr}
+  <div class="logo">LLM <span>Battle</span></div>
+  <div class="header-meta">
+    <span class="tag" id="current-tag"></span><br>
+    Comparativa semanal automatizada
   </div>
 </header>
+
+<div class="tab-bar">
+  <div class="tab active" data-tab="semana">Esta semana</div>
+  <div class="tab" data-tab="charts">Gráficos</div>
+  <div class="tab" data-tab="historia">Historial</div>
+</div>
+
 <div class="wrap">
-
-  <div class="lbl">// Prompt de esta semana</div>
-  <div class="prompt-box">${prompt}</div>
-
-  <div class="verdict">
-    <div class="vey">// Ganador de esta semana</div>
-    <div class="vwin">${winner ? `${winner.name} <em>gana esta semana</em>` : 'Sin ganador'}</div>
-    <div class="vscore">${winner ? `Score: ${winner.finalScore?.toFixed(2)} / 10  ·  ${ranking.filter(r=>r.finalScore!==null).map((r,i)=>`${i+1}. ${r.name} (${r.finalScore?.toFixed(2)})`).join('  ·  ')}` : ''}</div>
+  <div class="panel active" id="tab-semana">
+    <div class="sl" id="latest-week-label"></div>
+    <div class="pbox" id="latest-prompt"></div>
+    <div class="vbox" id="latest-winner"></div>
+    <div class="sl" id="latest-models-label"></div>
+    <div class="grid" id="latest-grid"></div>
   </div>
 
-  <div class="lbl">// Resultados de esta semana — ${ranking.filter(r=>r.finalScore!==null).length} modelos</div>
-  <div class="grid">${cardsHTML}</div>
-
-  <div class="section">
-    <div class="lbl">// Matriz de scoring cruzado (fila = evaluador · columna = evaluado · promedio 4 dims)</div>
-    <div class="matrix-wrap">
-      <table class="matrix">
-        <thead><tr><th>↓ eval / target →</th>${matrixHeaderCells}</tr></thead>
-        <tbody>${matrixRows}</tbody>
-      </table>
+  <div class="panel" id="tab-charts">
+    <div class="charts">
+      <div class="cbox"><div class="ctitle">Tendencia por semana</div><canvas id="cTrend"></canvas></div>
+      <div class="cbox"><div class="ctitle">Victorias acumuladas</div><canvas id="cWins"></canvas></div>
+      <div class="cbox"><div class="ctitle">Score promedio global</div><canvas id="cAvg"></canvas></div>
+      <div class="cbox"><div class="ctitle">Radar de dimensiones</div><canvas id="cRadar"></canvas></div>
     </div>
   </div>
 
-  ${history.length > 0 ? `
-  <div class="lbl" style="margin-top:3rem">// Análisis histórico — ${weeks.length} semanas · ${history.length} registros</div>
-  <div class="charts-grid">
-
-    <div class="chart-box">
-      <div class="chart-title">Evolución de score por semana</div>
-      <canvas id="chartTrend"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <div class="chart-title">Victorias acumuladas</div>
-      <canvas id="chartWins"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <div class="chart-title">Score promedio histórico por modelo</div>
-      <canvas id="chartAvg"></canvas>
-    </div>
-
-    <div class="chart-box">
-      <div class="chart-title">Fortalezas por dimensión (promedio histórico)</div>
-      <canvas id="chartRadar"></canvas>
-    </div>
-
+  <div class="panel" id="tab-historia">
+    <div class="week-selector" id="week-selector"></div>
+    <div id="history-detail"></div>
   </div>
-
-  <div class="section">
-    <div class="lbl">// Historial de batallas</div>
-    <div style="overflow-x:auto">
-      <table class="hist">
-        <thead><tr><th>Semana</th><th>Prompt</th><th>Ganador</th><th>Ranking completo</th></tr></thead>
-        <tbody>${histTableRows}</tbody>
-      </table>
-    </div>
-  </div>
-  ` : '<div class="lbl" style="color:var(--mut);margin-top:2rem">// Historial disponible desde la segunda batalla</div>'}
-
 </div>
 
 <script>
-const DATA = ${chartJSON};
+const WEEKS = ${weeksJSON};
+const MODEL_LIST = ${modelsJSON};
 
-// Paleta de colores por modelo (consistente entre gráficas)
-const PALETTE = [
-  '#c8ff00','#ff4757','#3cc8ff','#ffd700','#ff7f50','#a78bfa','#34d399','#f472b6'
-];
-const modelColor = name => {
-  const idx = DATA.modelNames.indexOf(name);
-  return PALETTE[idx % PALETTE.length];
+const PALETTE = {
+  Claude:"#3b82f6","GPT-4o":"#10b981",Grok:"#f59e0b",Gemini:"#8b5cf6",
+  DeepSeek:"#ef4444",Kimi:"#06b6d4",Mistral:"#ec4899",Cohere:"#f97316",Groq:"#a78bfa"
 };
+const col = m => PALETTE[m] || "#6b7280";
+const posClass = p => p===1?"pos-1":p===2?"pos-2":p===3?"pos-3":"pos-n";
 
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: true,
-  plugins: { legend: { labels: { color: '#888', font: { family: 'IBM Plex Mono', size: 11 }, boxWidth: 12 } } },
-};
-
-// 1. Evolución de score por semana (líneas)
-if (document.getElementById('chartTrend') && DATA.weeks.length > 0) {
-  new Chart(document.getElementById('chartTrend'), {
-    type: 'line',
-    data: {
-      labels: DATA.weeks,
-      datasets: DATA.modelNames.map(m => ({
-        label: m,
-        data: DATA.weeks.map(w => DATA.chartData[m]?.[w] ?? null),
-        borderColor: modelColor(m),
-        backgroundColor: modelColor(m) + '22',
-        pointBackgroundColor: modelColor(m),
-        borderWidth: 2,
-        pointRadius: 4,
-        tension: 0.3,
-        spanGaps: true,
-      }))
-    },
-    options: {
-      ...chartDefaults,
-      scales: {
-        x: { ticks: { color:'#555', font:{size:10} }, grid: { color:'#1c1c1c' } },
-        y: { min: 0, max: 10, ticks: { color:'#555', font:{size:10} }, grid: { color:'#1c1c1c' } }
-      }
-    }
-  });
+function buildCard(r) {
+  const dimKeys = Object.keys(r.dims);
+  const dimsHtml = dimKeys.map(d => {
+    const v = r.dims[d];
+    if (v === null || v === undefined) return '';
+    return \`<div class="dim">
+      <div class="dim-label">\${d}</div>
+      <div class="dim-val" style="color:\${col(r.model)}">\${parseFloat(v).toFixed(1)}</div>
+      <div class="dim-bar"><div class="dim-fill" style="width:\${parseFloat(v)*10}%;background:\${col(r.model)}"></div></div>
+    </div>\`;
+  }).join('');
+  return \`<div class="mcard\${r.pos===1?' winner':''}">
+    <div class="mcard-head">
+      <div class="mcard-name" style="color:\${r.pos===1?col(r.model):'var(--text)'}">\${r.model}</div>
+      <div class="mcard-pos \${posClass(r.pos)}">\${r.pos}°</div>
+    </div>
+    <div class="mcard-excerpt">\${r.excerpt||''}</div>
+    <div class="mcard-dims">\${dimsHtml}</div>
+    <div class="mcard-score">
+      <span class="score-label">Score</span>
+      <span class="score-val" style="color:\${col(r.model)}">\${parseFloat(r.score).toFixed(2)}</span>
+    </div>
+  </div>\`;
 }
 
-// 2. Victorias acumuladas (barras horizontales)
-if (document.getElementById('chartWins') && DATA.modelNames.length > 0) {
-  const sorted = Object.entries(DATA.winsPerModel).sort((a,b)=>b[1]-a[1]);
-  new Chart(document.getElementById('chartWins'), {
-    type: 'bar',
-    data: {
-      labels: sorted.map(([m]) => m),
-      datasets: [{
-        label: 'Victorias',
-        data: sorted.map(([,v]) => v),
-        backgroundColor: sorted.map(([m]) => modelColor(m)),
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      ...chartDefaults,
-      indexAxis: 'y',
-      plugins: { ...chartDefaults.plugins, legend: { display: false } },
-      scales: {
-        x: { ticks: { color:'#555', stepSize:1 }, grid: { color:'#1c1c1c' } },
-        y: { ticks: { color:'#888', font:{size:11} }, grid: { color:'#1c1c1c' } }
-      }
-    }
-  });
+function renderLatest() {
+  const w = WEEKS[WEEKS.length - 1];
+  const winner = w.results[0];
+  const rankingLine = w.results.map(r => \`\${r.pos}. \${r.model} (\${parseFloat(r.score).toFixed(2)})\`).join(' · ');
+  document.getElementById('current-tag').textContent = w.label;
+  document.getElementById('latest-week-label').textContent = \`\${w.label} · \${w.date}\`;
+  document.getElementById('latest-prompt').textContent = w.prompt;
+  document.getElementById('latest-models-label').textContent = \`\${w.results.length} modelos · \${w.label}\`;
+  document.getElementById('latest-winner').innerHTML = \`
+    <div class="sl" style="color:#93c5fd">Ganador</div>
+    <div class="vwin">\${winner.model} <span>gana esta semana</span></div>
+    <div class="ranking-line">\${rankingLine}</div>\`;
+  document.getElementById('latest-grid').innerHTML = w.results.map(r => buildCard(r)).join('');
 }
 
-// 3. Score promedio histórico (barras verticales)
-if (document.getElementById('chartAvg') && DATA.modelNames.length > 0) {
-  const avgs = DATA.modelNames.map(m => {
-    const vals = Object.values(DATA.chartData[m]).filter(v=>v!==null);
-    return vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : 0;
+function renderCharts() {
+  const weekLabels = WEEKS.map(w => w.label);
+  const wins = {}, dimAccum = {}, scoreAccum = {};
+  MODEL_LIST.forEach(m => { wins[m]=0; dimAccum[m]={Claridad:0,Profundidad:0,Originalidad:0,'Concisión':0}; scoreAccum[m]=[]; });
+  WEEKS.forEach(w => {
+    w.results.forEach(r => {
+      if (r.pos===1) wins[r.model]=(wins[r.model]||0)+1;
+      scoreAccum[r.model].push(parseFloat(r.score));
+      ['Claridad','Profundidad','Originalidad','Concisión'].forEach(d => {
+        const v = r.dims[d];
+        if (v!=null) dimAccum[r.model][d]=(dimAccum[r.model][d]||0)+parseFloat(v);
+      });
+    });
   });
-  const sorted = DATA.modelNames.map((m,i) => ({m, v:avgs[i]})).sort((a,b)=>b.v-a.v);
-  new Chart(document.getElementById('chartAvg'), {
-    type: 'bar',
-    data: {
-      labels: sorted.map(d => d.m),
-      datasets: [{
-        label: 'Score promedio',
-        data: sorted.map(d => d.v.toFixed(3)),
-        backgroundColor: sorted.map(d => modelColor(d.m)),
-        borderWidth: 0,
-      }]
-    },
-    options: {
-      ...chartDefaults,
-      plugins: { ...chartDefaults.plugins, legend: { display: false } },
-      scales: {
-        x: { ticks: { color:'#888', font:{size:10} }, grid: { color:'#1c1c1c' } },
-        y: { min: 0, max: 10, ticks: { color:'#555', font:{size:10} }, grid: { color:'#1c1c1c' } }
-      }
-    }
+  const avgDims = {};
+  MODEL_LIST.forEach(m => {
+    avgDims[m]={};
+    ['Claridad','Profundidad','Originalidad','Concisión'].forEach(d => {
+      avgDims[m][d]=dimAccum[m][d]/WEEKS.length;
+    });
   });
+  const cd = { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ color:'#9ca3af', font:{size:11}, boxWidth:12 }}}};
+  new Chart(document.getElementById('cTrend'),{type:'line',data:{
+    labels:weekLabels,
+    datasets:MODEL_LIST.map(m=>({label:m,data:WEEKS.map(w=>w.results.find(r=>r.model===m)?.score??null),
+      borderColor:col(m),backgroundColor:col(m)+'22',borderWidth:2,pointRadius:5,tension:.3,spanGaps:true}))
+  },options:{...cd,scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
+  const ws=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
+  new Chart(document.getElementById('cWins'),{type:'bar',data:{labels:ws.map(([m])=>m),datasets:[{label:'Victorias',data:ws.map(([,v])=>v),backgroundColor:ws.map(([m])=>col(m)),borderWidth:0}]},
+    options:{...cd,indexAxis:'y',plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',stepSize:1},grid:{color:'#232736'}},y:{ticks:{color:'#9ca3af',font:{size:11}},grid:{color:'#232736'}}}}});
+  const as=MODEL_LIST.map(m=>({m,v:scoreAccum[m].length?scoreAccum[m].reduce((a,b)=>a+b,0)/scoreAccum[m].length:0})).sort((a,b)=>b.v-a.v);
+  new Chart(document.getElementById('cAvg'),{type:'bar',data:{labels:as.map(d=>d.m),datasets:[{label:'Score promedio',data:as.map(d=>+d.v.toFixed(3)),backgroundColor:as.map(d=>col(d.m)),borderWidth:0}]},
+    options:{...cd,plugins:{...cd.plugins,legend:{display:false}},scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'#232736'}},y:{min:0,max:10,ticks:{color:'#9ca3af'},grid:{color:'#232736'}}}}});
+  new Chart(document.getElementById('cRadar'),{type:'radar',data:{labels:['Claridad','Profundidad','Originalidad','Concisión'],
+    datasets:MODEL_LIST.map(m=>({label:m,data:['Claridad','Profundidad','Originalidad','Concisión'].map(d=>avgDims[m][d]||0),
+      borderColor:col(m),backgroundColor:col(m)+'18',pointBackgroundColor:col(m),borderWidth:2}))},
+    options:{...cd,scales:{r:{min:0,max:10,ticks:{color:'#9ca3af',backdropColor:'transparent',stepSize:2},grid:{color:'#232736'},pointLabels:{color:'#9ca3af',font:{size:10}},angleLines:{color:'#232736'}}}}});
 }
 
-// 4. Radar de fortalezas por dimensión
-if (document.getElementById('chartRadar') && DATA.modelNames.length > 0) {
-  const dims = ['claridad','profundidad','originalidad','concision'];
-  const dimLabels = ['Claridad','Profundidad','Originalidad','Concisión'];
-  new Chart(document.getElementById('chartRadar'), {
-    type: 'radar',
-    data: {
-      labels: dimLabels,
-      datasets: DATA.modelNames.map(m => ({
-        label: m,
-        data: dims.map(d => DATA.dimAvgsHistory[m]?.[d] ?? 0),
-        borderColor: modelColor(m),
-        backgroundColor: modelColor(m) + '18',
-        pointBackgroundColor: modelColor(m),
-        borderWidth: 2,
-      }))
-    },
-    options: {
-      ...chartDefaults,
-      scales: {
-        r: {
-          min: 0, max: 10,
-          ticks: { color:'#555', backdropColor:'transparent', stepSize:2 },
-          grid: { color:'#2a2a2a' },
-          pointLabels: { color:'#888', font:{size:10} },
-          angleLines: { color:'#2a2a2a' },
-        }
-      }
-    }
-  });
+let activeWeekIdx = WEEKS.length - 1;
+function renderHistorySelector() {
+  const sel = document.getElementById('week-selector');
+  sel.innerHTML = WEEKS.map((w,i) => \`<div class="week-btn\${i===activeWeekIdx?' active':''}" data-idx="\${i}">\${w.label}</div>\`).join('');
+  sel.querySelectorAll('.week-btn').forEach(btn => btn.addEventListener('click', () => {
+    activeWeekIdx=parseInt(btn.dataset.idx); renderHistorySelector(); renderHistoryDetail();
+  }));
 }
-</script>
+function renderHistoryDetail() {
+  const w = WEEKS[activeWeekIdx];
+  const winner = w.results[0];
+  const rankingLine = w.results.map(r => \`\${r.pos}. \${r.model} (\${parseFloat(r.score).toFixed(2)})\`).join(' · ');
+  const tableRows = w.results.map(r => {
+    const dimsStr = Object.entries(r.dims).filter(([,v])=>v!=null).map(([k,v])=>\`\${k}: \${parseFloat(v).toFixed(1)}\`).join(' · ');
+    return \`<tr>
+      <td><span class="rank-badge" style="background:\${col(r.model)}22;color:\${col(r.model)}">\${r.pos}°</span></td>
+      <td style="color:\${col(r.model)};font-weight:600">\${r.model}</td>
+      <td style="font-weight:700;color:var(--accent2)">\${parseFloat(r.score).toFixed(2)}</td>
+      <td style="color:var(--muted);font-size:11px">\${dimsStr}</td>
+    </tr>\`;
+  }).join('');
+  document.getElementById('history-detail').innerHTML = \`
+    <div class="sl">\${w.date}</div>
+    <div class="pbox" style="margin-bottom:1.2rem">\${w.prompt}</div>
+    <div class="vbox" style="margin-bottom:1.5rem">
+      <div class="sl" style="color:#93c5fd">Ganador</div>
+      <div class="vwin">\${winner.model} <span>gana esta semana</span></div>
+      <div class="ranking-line">\${rankingLine}</div>
+    </div>
+    <table class="hist" style="margin-bottom:1.5rem">
+      <thead><tr><th>#</th><th>Modelo</th><th>Score</th><th>Dimensiones</th></tr></thead>
+      <tbody>\${tableRows}</tbody>
+    </table>
+    <div class="sl" style="margin-bottom:.75rem">\${w.results.length} modelos · \${w.label}</div>
+    <div class="grid">\${w.results.map(r=>buildCard(r)).join('')}</div>\`;
+}
+
+let chartsRendered = false;
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab==='charts' && !chartsRendered) { chartsRendered=true; renderCharts(); }
+    if (tab.dataset.tab==='historia') { renderHistorySelector(); renderHistoryDetail(); }
+  });
+});
+
+renderLatest();
+<\/script>
 </body>
 </html>`;
 }
@@ -782,7 +601,6 @@ async function callClaude(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error Claude');
   return d.content[0].text;
 }
-
 async function callOpenAI(prompt) {
   const r = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -793,7 +611,6 @@ async function callOpenAI(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error OpenAI');
   return d.choices[0].message.content;
 }
-
 async function callGemini(prompt) {
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_KEY}`, {
     method: 'POST',
@@ -804,7 +621,6 @@ async function callGemini(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error Gemini');
   return d.candidates[0].content.parts[0].text;
 }
-
 async function callGrok(prompt) {
   const r = await fetch('https://api.x.ai/v1/chat/completions', {
     method: 'POST',
@@ -815,7 +631,6 @@ async function callGrok(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error Grok');
   return d.choices[0].message.content;
 }
-
 async function callKimi(prompt) {
   const r = await fetch('https://api.moonshot.cn/v1/chat/completions', {
     method: 'POST',
@@ -826,7 +641,6 @@ async function callKimi(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error Kimi');
   return d.choices[0].message.content;
 }
-
 async function callDeepSeek(prompt) {
   const r = await fetch('https://api.deepseek.com/chat/completions', {
     method: 'POST',
@@ -837,7 +651,6 @@ async function callDeepSeek(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error DeepSeek');
   return d.choices[0].message.content;
 }
-
 async function callMistral(prompt) {
   const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
     method: 'POST',
@@ -848,7 +661,6 @@ async function callMistral(prompt) {
   if (!r.ok) throw new Error(d.error?.message || 'Error Mistral');
   return d.choices[0].message.content;
 }
-
 async function callCohere(prompt) {
   const r = await fetch('https://api.cohere.com/v2/chat', {
     method: 'POST',
@@ -859,7 +671,6 @@ async function callCohere(prompt) {
   if (!r.ok) throw new Error(d.message || 'Error Cohere');
   return d.message.content[0].text;
 }
-
 async function callGroq(prompt) {
   const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -887,32 +698,22 @@ async function main() {
     process.exit(1);
   }
 
-  // 1. Generar prompt
   const prompt = await generateWeeklyPrompt();
-
-  // 2. Respuestas
   const responses = await getAllResponses(prompt);
-
-  // 3. Scoring cruzado
   const allScores = await crossScore(prompt, responses);
 
-  // 4. Ranking
   console.log('\n🏆 Calculando ranking...');
   const ranking = computeRanking(responses, allScores);
   ranking.forEach((m, i) => {
-    const score = m.finalScore !== null ? m.finalScore.toFixed(2) : 'sin score';
-    console.log(`   ${i+1}. ${m.name} — ${score}`);
+    console.log(`   ${i+1}. ${m.name} — ${m.finalScore !== null ? m.finalScore.toFixed(2) : 'sin score'}`);
   });
 
-  // 5. Google Sheets
   await writeToSheets(ranking, prompt, weekLabel, allScores);
 
-  // 6. Leer historial completo para las gráficas
   console.log('\n📈 Leyendo historial para gráficas...');
   const history = await readHistoryFromSheets();
   console.log(`   ${history.length} registros históricos`);
 
-  // 7. Generar HTML
   console.log('\n🌐 Generando HTML...');
   if (!fs.existsSync('docs')) fs.mkdirSync('docs');
   const html = buildHTML(prompt, ranking, weekLabel, allScores, history);
